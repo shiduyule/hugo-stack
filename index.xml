@@ -35,6 +35,8 @@
 		data-flex-basis=&#34;824px&#34;
 	
 &gt;&lt;/p&gt;
+&lt;img src=&#34;images/image.png&#34; alt=&#34;描述&#34; style=&#34;width:500px; display:block; margin:auto;&#34;&gt;
+&lt;img src=&#34;images/image.png&#34; alt=&#34;描述&#34; style=&#34;width:80%; display:block; margin:auto;&#34;&gt;
 &lt;h3 id=&#34;2-前向扩散过程&#34;&gt;2. 前向扩散过程
 &lt;/h3&gt;&lt;h4 id=&#34;定义&#34;&gt;定义
 &lt;/h4&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/hugo-stack/p/myfirstblog/images/image-2.png&#34;
@@ -51,6 +53,7 @@
 		data-flex-basis=&#34;1432px&#34;
 	
 &gt;&lt;/p&gt;
+&lt;img src=&#34;images/image-2.png&#34; alt=&#34;描述&#34; style=&#34;width:80%; display:block; margin:auto;&#34;&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;生成模型的本质就是估计给定数据样本的概率密度函数(PDF)，然后根据估计的PDF采样随机生成。只是，对于深度生成模型，这个PDF没有显式的表达式，需要靠神经网络进行拟合。&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
