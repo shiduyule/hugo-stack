@@ -13,9 +13,113 @@
         <pubDate>Thu, 19 Jun 2025 22:16:37 +0800</pubDate>
         
         <guid>https://shiduyule.github.io/hugo-stack/p/myfirstblog/</guid>
-        <description>&lt;h2 id=&#34;扩散模型基础&#34;&gt;扩散模型基础
-&lt;/h2&gt;&lt;h3 id=&#34;11&#34;&gt;1.1
-&lt;/h3&gt;</description>
+        <description>&lt;h2 id=&#34;扩散模型-diffusion-model基础-&#34;&gt;扩散模型 （Diffusion Model）基础 ：
+&lt;/h2&gt;&lt;h3 id=&#34;1-核心&#34;&gt;1. 核心
+&lt;/h3&gt;&lt;p&gt;扩散模型通过模拟数据的&lt;strong&gt;前向扩散&lt;/strong&gt;（逐步加噪）和&lt;strong&gt;反向扩散&lt;/strong&gt;（逐步去噪）生成样本，其特点包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;借鉴&lt;strong&gt;非平衡热力学&lt;/strong&gt;理论&lt;/li&gt;
+&lt;li&gt;基于&lt;strong&gt;马尔可夫链&lt;/strong&gt;   实现 添加噪声/去除噪声过程&lt;/li&gt;
+&lt;li&gt;通过&lt;strong&gt;分数匹配&lt;/strong&gt;（Score Matching）优化模型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://shiduyule.github.io/hugo-stack/p/myfirstblog/images/image.png&#34;
+	width=&#34;1718&#34;
+	height=&#34;500&#34;
+	srcset=&#34;https://shiduyule.github.io/hugo-stack/p/myfirstblog/images/image_hu_beeea32d9b15485e.png 480w, https://shiduyule.github.io/hugo-stack/p/myfirstblog/images/image_hu_35dc12e663b32e2f.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;ddpm&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;343&#34;
+		data-flex-basis=&#34;824px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-前向扩散过程&#34;&gt;2. 前向扩散过程
+&lt;/h3&gt;&lt;h4 id=&#34;定义&#34;&gt;定义
+&lt;/h4&gt;&lt;p&gt;&lt;img src=&#34;https://shiduyule.github.io/hugo-stack/p/myfirstblog/images/image-2.png&#34;
+	width=&#34;2430&#34;
+	height=&#34;407&#34;
+	srcset=&#34;https://shiduyule.github.io/hugo-stack/p/myfirstblog/images/image-2_hu_f746b9a0a223a022.png 480w, https://shiduyule.github.io/hugo-stack/p/myfirstblog/images/image-2_hu_5953ff7be74b8012.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;alt text&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;597&#34;
+		data-flex-basis=&#34;1432px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;生成模型的本质就是估计给定数据样本的概率密度函数(PDF)，然后根据估计的PDF采样随机生成。只是，对于深度生成模型，这个PDF没有显式的表达式，需要靠神经网络进行拟合。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如上图， 其中 $\mathbf{x_T}$ 为纯高斯噪声，$\mathbf{x_0}$ 为生成的样本，从一个无噪声的图像 $x_0$ 开始,正向扩散的过程是一个从时间 t = 0 到 t = 1 的持续时间随机过程 ，逐步向图像 $\mathbf{x}$ 引入噪声，直至在 t = 1 时候图像完全变成高斯噪声。&lt;/p&gt;
+&lt;p&gt;逐步添加高斯噪声的&lt;strong&gt;前向过程&lt;/strong&gt;：
+&lt;/p&gt;
+$$
+q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1-\beta_t}\mathbf{x}_{t-1}, \beta_t\mathbf{I})
+$$&lt;ul&gt;
+&lt;li&gt;$\beta_t \in (0,1)$ 为噪声调度参数&lt;/li&gt;
+&lt;li&gt;$t \in {1,2,&amp;hellip;,T}$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;闭合形式解&#34;&gt;闭合形式解
+&lt;/h4&gt;&lt;p&gt;任意时间步的直接采样公式：
+&lt;/p&gt;
+$$
+\mathbf{x}_t = \sqrt{\alpha_t}\mathbf{x}_0 + \sqrt{1-\alpha_t}\epsilon, \quad \epsilon \sim \mathcal{N}(0,\mathbf{I})
+$$&lt;ul&gt;
+&lt;li&gt;$\alpha_t = \prod_{s=1}^t (1-\beta_s)$&lt;/li&gt;
+&lt;li&gt;$\bar{\alpha}&lt;em&gt;t = \prod&lt;/em&gt;{s=1}^t \alpha_s$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;3-反向扩散过程&#34;&gt;3. 反向扩散过程
+&lt;/h3&gt;&lt;h4 id=&#34;参数化建模&#34;&gt;参数化建模
+&lt;/h4&gt;&lt;p&gt;学习反向高斯转移分布：
+&lt;/p&gt;
+$$
+p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mu_\theta(\mathbf{x}_t, t), \Sigma_\theta(\mathbf{x}_t, t))
+$$&lt;h2 id=&#34;4-训练目标&#34;&gt;4. 训练目标
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;训练是通过优化通常的负对数似然的变分界来完成的：&lt;/strong&gt;
+&lt;/p&gt;
+$$
+\mathbb{E} \left[ -\log p_\theta(\mathbf{x}_0) \right] 
+\leq \mathbb{E}_q \left[ -\log \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \mid \mathbf{x}_0)} \right] 
+= \mathbb{E}_q \left[ -\log p(\mathbf{x}_T) - \sum_{t \geq 1} \log \frac{p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t)}{q(\mathbf{x}_t \mid \mathbf{x}_{t-1})} \right] 
+= L
+$$&lt;p&gt;通过随机梯度下降优化L的随机项，可以实现有效的训练。进一步的改进来自方差减少，将 L重写为：&lt;/p&gt;
+$$
+\mathbb{E}_q \left[ 
+\underbrace{D_{\mathrm{KL}}(q(\mathbf{x}_T \mid \mathbf{x}_0) \,\|\, p(\mathbf{x}_T))}_{L_T}
++\sum_{t &gt; 1} 
+\underbrace{D_{\mathrm{KL}}(q(\mathbf{x}_{t-1} \mid \mathbf{x}_t, \mathbf{x}_0) \,\|\, p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t))}_{L_{t-1}} 
+-\underbrace{\log p_\theta(\mathbf{x}_0 \mid \mathbf{x}_1)}_{L_0} \right]
+$$&lt;h4 id=&#34;简化损失函数&#34;&gt;简化损失函数
+&lt;/h4&gt;&lt;p&gt;实际采用加权MSE：
+&lt;/p&gt;
+$$
+L_{\text{simple}}(\theta) := \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}} \left[ 
+\left\| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta\left(
+\sqrt{\bar{\alpha}_t} \, \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t} \, \boldsymbol{\epsilon}, \, t
+\right) \right\|^2 
+\right]
+$$&lt;h2 id=&#34;参考文献&#34;&gt;参考文献
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Denoising Diffusion Probabilistic Models&lt;/strong&gt;&lt;br&gt;
+&lt;a class=&#34;link&#34; href=&#34;https://arxiv.org/abs/2006.11239&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://arxiv.org/abs/2006.11239&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Fast-DDPM: Fast Denoising Diffusion Probabilistic Models for Medical Image-to-Image Generation&lt;/strong&gt;&lt;br&gt;
+&lt;a class=&#34;link&#34; href=&#34;https://ieeexplore.ieee.org/abstract/document/10979336&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://ieeexplore.ieee.org/abstract/document/10979336&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;二-扩散模型文献&#34;&gt;二、 扩散模型文献
+&lt;/h2&gt;&lt;h3 id=&#34;1-半监督学习&#34;&gt;1. 半监督学习
+&lt;/h3&gt;&lt;h4 id=&#34;semi-supervised-ct-denoising-via-text-guided-mamba-diffusion-models&#34;&gt;Semi-Supervised CT Denoising via Text-Guided Mamba Diffusion Models
+&lt;/h4&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://ieeexplore.ieee.org/document/10931030&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://ieeexplore.ieee.org/document/10931030&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;主要内容&#34;&gt;主要内容
+&lt;/h4&gt;&lt;p&gt;低剂量计算机断层扫描（CT）减少了患者的辐射暴露，但它引入了噪声和伪影，可能误导诊断。扩散方法，在保留细节的同时有效地减少了图像的平滑。然而，迭代采样会耗费大量的时间。此外，获得大量配对的低剂量和正常剂量CT图像在临床上具有挑战性，不同的身体区域和设备的成像结果也不同。&lt;/p&gt;
+&lt;p&gt;本文提出了一种新的&lt;strong&gt;半监督扩散模型&lt;/strong&gt;。此外，在去噪任务中设计了与不同解剖区域和设备相关的文本信息，并开发了一种文本引导方法，使模型能够生成准确的去噪结果，而无需为每个区域或设备单独建立模型。实现了一种非对称编码器-解码器结构，其特点是基于状态空间模型的编码器增强了噪声预测能力。&lt;/p&gt;
+&lt;p&gt;此外，为了提高采样效率，在采样过程中提出了重绘特征。它可以根据噪声水平调整重绘率，确保详细的图像保存，同时显着减少时间。使用GE和Siemens两种设备，在两种低剂量设置（10%和25%）下扫描头部和胸部体模，共获得13499片。用于评估的体模数据集独立于训练集进行扫描，包括来自两台设备的两个站点的总计1400张图像。我们的方法通过处理各种身体部位和设备切片，优于部分无监督和有监督的方法，并且比去噪扩散概率模型（ddpm）快100倍。&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>Chinese Test</title>

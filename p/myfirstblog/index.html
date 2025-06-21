@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="扩散模型基础 1.1 ">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="扩散模型 （Diffusion Model）基础 ： 1. 核心 扩散模型通过模拟数据的前向扩散（逐步加噪）和反向扩散（逐步去噪）生成样本，其特点包括：\n借鉴非平衡热力学理论 基于马尔可夫链 实现 添加噪声/去除噪声过程 通过分数匹配（Score Matching）优化模型 ">
 <title>MyFirstBlog</title>
 
 <link rel='canonical' href='https://shiduyule.github.io/hugo-stack/p/myfirstblog/'>
 
 <link rel="stylesheet" href="/hugo-stack/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="MyFirstBlog">
-<meta property='og:description' content="扩散模型基础 1.1 ">
+<meta property='og:description' content="扩散模型 （Diffusion Model）基础 ： 1. 核心 扩散模型通过模拟数据的前向扩散（逐步加噪）和反向扩散（逐步去噪）生成样本，其特点包括：\n借鉴非平衡热力学理论 基于马尔可夫链 实现 添加噪声/去除噪声过程 通过分数匹配（Score Matching）优化模型 ">
 <meta property='og:url' content='https://shiduyule.github.io/hugo-stack/p/myfirstblog/'>
 <meta property='og:site_name' content='shiduyule'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-19T22:16:37&#43;08:00'/><meta property='article:modified_time' content='2025-06-19T22:16:37&#43;08:00'/>
 <meta name="twitter:title" content="MyFirstBlog">
-<meta name="twitter:description" content="扩散模型基础 1.1 ">
+<meta name="twitter:description" content="扩散模型 （Diffusion Model）基础 ： 1. 核心 扩散模型通过模拟数据的前向扩散（逐步加噪）和反向扩散（逐步去噪）生成样本，其特点包括：\n借鉴非平衡热力学理论 基于马尔可夫链 实现 添加噪声/去除噪声过程 通过分数匹配（Score Matching）优化模型 ">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -272,9 +272,40 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#扩散模型基础">扩散模型基础</a>
+    <li><a href="#扩散模型-diffusion-model基础-">扩散模型 （Diffusion Model）基础 ：</a>
       <ol>
-        <li><a href="#11">1.1</a></li>
+        <li><a href="#1-核心">1. 核心</a></li>
+        <li><a href="#2-前向扩散过程">2. 前向扩散过程</a>
+          <ol>
+            <li><a href="#定义">定义</a></li>
+            <li><a href="#闭合形式解">闭合形式解</a></li>
+          </ol>
+        </li>
+        <li><a href="#3-反向扩散过程">3. 反向扩散过程</a>
+          <ol>
+            <li><a href="#参数化建模">参数化建模</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#4-训练目标">4. 训练目标</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#简化损失函数">简化损失函数</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#参考文献">参考文献</a></li>
+    <li><a href="#二-扩散模型文献">二、 扩散模型文献</a>
+      <ol>
+        <li><a href="#1-半监督学习">1. 半监督学习</a>
+          <ol>
+            <li><a href="#semi-supervised-ct-denoising-via-text-guided-mamba-diffusion-models">Semi-Supervised CT Denoising via Text-Guided Mamba Diffusion Models</a></li>
+            <li><a href="#主要内容">主要内容</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
   </ol>
@@ -333,7 +364,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 1 分钟
+                    阅读时长: 3 分钟
                 </time>
             </div>
         
@@ -348,9 +379,113 @@
     <section class="article-content">
     
     
-    <h2 id="扩散模型基础">扩散模型基础
-</h2><h3 id="11">1.1
-</h3>
+    <h2 id="扩散模型-diffusion-model基础-">扩散模型 （Diffusion Model）基础 ：
+</h2><h3 id="1-核心">1. 核心
+</h3><p>扩散模型通过模拟数据的<strong>前向扩散</strong>（逐步加噪）和<strong>反向扩散</strong>（逐步去噪）生成样本，其特点包括：</p>
+<ul>
+<li>借鉴<strong>非平衡热力学</strong>理论</li>
+<li>基于<strong>马尔可夫链</strong>   实现 添加噪声/去除噪声过程</li>
+<li>通过<strong>分数匹配</strong>（Score Matching）优化模型</li>
+</ul>
+<p><img src="/hugo-stack/p/myfirstblog/images/image.png"
+	width="1718"
+	height="500"
+	srcset="/hugo-stack/p/myfirstblog/images/image_hu_beeea32d9b15485e.png 480w, /hugo-stack/p/myfirstblog/images/image_hu_35dc12e663b32e2f.png 1024w"
+	loading="lazy"
+	
+		alt="ddpm"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="343"
+		data-flex-basis="824px"
+	
+></p>
+<h3 id="2-前向扩散过程">2. 前向扩散过程
+</h3><h4 id="定义">定义
+</h4><p><img src="/hugo-stack/p/myfirstblog/images/image-2.png"
+	width="2430"
+	height="407"
+	srcset="/hugo-stack/p/myfirstblog/images/image-2_hu_f746b9a0a223a022.png 480w, /hugo-stack/p/myfirstblog/images/image-2_hu_5953ff7be74b8012.png 1024w"
+	loading="lazy"
+	
+		alt="alt text"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="597"
+		data-flex-basis="1432px"
+	
+></p>
+<ul>
+<li><strong>生成模型的本质就是估计给定数据样本的概率密度函数(PDF)，然后根据估计的PDF采样随机生成。只是，对于深度生成模型，这个PDF没有显式的表达式，需要靠神经网络进行拟合。</strong></li>
+</ul>
+<p>如上图， 其中 $\mathbf{x_T}$ 为纯高斯噪声，$\mathbf{x_0}$ 为生成的样本，从一个无噪声的图像 $x_0$ 开始,正向扩散的过程是一个从时间 t = 0 到 t = 1 的持续时间随机过程 ，逐步向图像 $\mathbf{x}$ 引入噪声，直至在 t = 1 时候图像完全变成高斯噪声。</p>
+<p>逐步添加高斯噪声的<strong>前向过程</strong>：
+</p>
+$$
+q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1-\beta_t}\mathbf{x}_{t-1}, \beta_t\mathbf{I})
+$$<ul>
+<li>$\beta_t \in (0,1)$ 为噪声调度参数</li>
+<li>$t \in {1,2,&hellip;,T}$</li>
+</ul>
+<h4 id="闭合形式解">闭合形式解
+</h4><p>任意时间步的直接采样公式：
+</p>
+$$
+\mathbf{x}_t = \sqrt{\alpha_t}\mathbf{x}_0 + \sqrt{1-\alpha_t}\epsilon, \quad \epsilon \sim \mathcal{N}(0,\mathbf{I})
+$$<ul>
+<li>$\alpha_t = \prod_{s=1}^t (1-\beta_s)$</li>
+<li>$\bar{\alpha}<em>t = \prod</em>{s=1}^t \alpha_s$</li>
+</ul>
+<h3 id="3-反向扩散过程">3. 反向扩散过程
+</h3><h4 id="参数化建模">参数化建模
+</h4><p>学习反向高斯转移分布：
+</p>
+$$
+p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mu_\theta(\mathbf{x}_t, t), \Sigma_\theta(\mathbf{x}_t, t))
+$$<h2 id="4-训练目标">4. 训练目标
+</h2><p><strong>训练是通过优化通常的负对数似然的变分界来完成的：</strong>
+</p>
+$$
+\mathbb{E} \left[ -\log p_\theta(\mathbf{x}_0) \right] 
+\leq \mathbb{E}_q \left[ -\log \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \mid \mathbf{x}_0)} \right] 
+= \mathbb{E}_q \left[ -\log p(\mathbf{x}_T) - \sum_{t \geq 1} \log \frac{p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t)}{q(\mathbf{x}_t \mid \mathbf{x}_{t-1})} \right] 
+= L
+$$<p>通过随机梯度下降优化L的随机项，可以实现有效的训练。进一步的改进来自方差减少，将 L重写为：</p>
+$$
+\mathbb{E}_q \left[ 
+\underbrace{D_{\mathrm{KL}}(q(\mathbf{x}_T \mid \mathbf{x}_0) \,\|\, p(\mathbf{x}_T))}_{L_T}
++\sum_{t > 1} 
+\underbrace{D_{\mathrm{KL}}(q(\mathbf{x}_{t-1} \mid \mathbf{x}_t, \mathbf{x}_0) \,\|\, p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t))}_{L_{t-1}} 
+-\underbrace{\log p_\theta(\mathbf{x}_0 \mid \mathbf{x}_1)}_{L_0} \right]
+$$<h4 id="简化损失函数">简化损失函数
+</h4><p>实际采用加权MSE：
+</p>
+$$
+L_{\text{simple}}(\theta) := \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}} \left[ 
+\left\| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta\left(
+\sqrt{\bar{\alpha}_t} \, \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t} \, \boldsymbol{\epsilon}, \, t
+\right) \right\|^2 
+\right]
+$$<h2 id="参考文献">参考文献
+</h2><p><strong>Denoising Diffusion Probabilistic Models</strong><br>
+<a class="link" href="https://arxiv.org/abs/2006.11239"  target="_blank" rel="noopener"
+    >https://arxiv.org/abs/2006.11239</a></p>
+<p><strong>Fast-DDPM: Fast Denoising Diffusion Probabilistic Models for Medical Image-to-Image Generation</strong><br>
+<a class="link" href="https://ieeexplore.ieee.org/abstract/document/10979336"  target="_blank" rel="noopener"
+    >https://ieeexplore.ieee.org/abstract/document/10979336</a></p>
+<hr>
+<h2 id="二-扩散模型文献">二、 扩散模型文献
+</h2><h3 id="1-半监督学习">1. 半监督学习
+</h3><h4 id="semi-supervised-ct-denoising-via-text-guided-mamba-diffusion-models">Semi-Supervised CT Denoising via Text-Guided Mamba Diffusion Models
+</h4><p><a class="link" href="https://ieeexplore.ieee.org/document/10931030"  target="_blank" rel="noopener"
+    >https://ieeexplore.ieee.org/document/10931030</a></p>
+<h4 id="主要内容">主要内容
+</h4><p>低剂量计算机断层扫描（CT）减少了患者的辐射暴露，但它引入了噪声和伪影，可能误导诊断。扩散方法，在保留细节的同时有效地减少了图像的平滑。然而，迭代采样会耗费大量的时间。此外，获得大量配对的低剂量和正常剂量CT图像在临床上具有挑战性，不同的身体区域和设备的成像结果也不同。</p>
+<p>本文提出了一种新的<strong>半监督扩散模型</strong>。此外，在去噪任务中设计了与不同解剖区域和设备相关的文本信息，并开发了一种文本引导方法，使模型能够生成准确的去噪结果，而无需为每个区域或设备单独建立模型。实现了一种非对称编码器-解码器结构，其特点是基于状态空间模型的编码器增强了噪声预测能力。</p>
+<p>此外，为了提高采样效率，在采样过程中提出了重绘特征。它可以根据噪声水平调整重绘率，确保详细的图像保存，同时显着减少时间。使用GE和Siemens两种设备，在两种低剂量设置（10%和25%）下扫描头部和胸部体模，共获得13499片。用于评估的体模数据集独立于训练集进行扫描，包括来自两台设备的两个站点的总计1400张图像。我们的方法通过处理各种身体部位和设备切片，优于部分无监督和有监督的方法，并且比去噪扩散概率模型（ddpm）快100倍。</p>
+
 </section>
 
 
