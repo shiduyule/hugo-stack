@@ -2,55 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://shiduyule.github.io/hugo-stack/en/categories/</loc>
+    <loc>http://localhost:1313/hugo-stack/en/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://shiduyule.github.io/hugo-stack/categories/"
+                href="http://localhost:1313/hugo-stack/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ar"
-                href="https://shiduyule.github.io/hugo-stack/ar/categories/"
+                href="http://localhost:1313/hugo-stack/ar/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shiduyule.github.io/hugo-stack/en/categories/"
+                href="http://localhost:1313/hugo-stack/en/categories/"
                 />
   </url><url>
-    <loc>https://shiduyule.github.io/hugo-stack/en/</loc>
+    <loc>http://localhost:1313/hugo-stack/en/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://shiduyule.github.io/hugo-stack/"
+                href="http://localhost:1313/hugo-stack/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ar"
-                href="https://shiduyule.github.io/hugo-stack/ar/"
+                href="http://localhost:1313/hugo-stack/ar/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shiduyule.github.io/hugo-stack/en/"
+                href="http://localhost:1313/hugo-stack/en/"
                 />
   </url><url>
-    <loc>https://shiduyule.github.io/hugo-stack/en/tags/</loc>
+    <loc>http://localhost:1313/hugo-stack/en/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://shiduyule.github.io/hugo-stack/tags/"
+                href="http://localhost:1313/hugo-stack/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ar"
-                href="https://shiduyule.github.io/hugo-stack/ar/tags/"
+                href="http://localhost:1313/hugo-stack/ar/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://shiduyule.github.io/hugo-stack/en/tags/"
+                href="http://localhost:1313/hugo-stack/en/tags/"
                 />
   </url>
 </urlset>
