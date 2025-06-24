@@ -89,7 +89,14 @@ $$&lt;h2 id=&#34;参考文献&#34;&gt;参考文献
     &gt;https://ieeexplore.ieee.org/abstract/document/10979336&lt;/a&gt;&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;二-扩散模型文献&#34;&gt;二、 扩散模型文献
-&lt;/h2&gt;&lt;h3 id=&#34;1-半监督学习&#34;&gt;1. 半监督学习
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Fast-DDPM: Fast Denoising Diffusion Probabilistic Models for Medical Image-to-Image Generation&lt;/strong&gt;&lt;br&gt;
+&lt;a class=&#34;link&#34; href=&#34;https://ieeexplore.ieee.org/abstract/document/10979336&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://ieeexplore.ieee.org/abstract/document/10979336&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;扩散模型已经成为高质量图像生成的强大工具。前向扩散过程将噪声添加到高质量图像中，直到它成为纯高斯噪声。&lt;/p&gt;
+&lt;p&gt;然后训练图像去噪器学习反向过程，逐步从随机高斯噪声中去除噪声，直到重建无噪声图像。&lt;/p&gt;
+&lt;p&gt;这使得生成符合训练数据集分布的新高质量图像成为可能。
+除计算机视觉外，扩散模型越来越多地应用于医学成像，以改善疾病诊断，治疗计划和患者监测。&lt;/p&gt;
+&lt;h3 id=&#34;1-半监督学习&#34;&gt;1. 半监督学习
 &lt;/h3&gt;&lt;h4 id=&#34;semi-supervised-ct-denoising-via-text-guided-mamba-diffusion-models&#34;&gt;Semi-Supervised CT Denoising via Text-Guided Mamba Diffusion Models
 &lt;/h4&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://ieeexplore.ieee.org/document/10931030&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://ieeexplore.ieee.org/document/10931030&lt;/a&gt;&lt;/p&gt;
